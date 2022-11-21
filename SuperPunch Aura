@@ -1,0 +1,258 @@
+ game.StarterGui:SetCore("SendNotification", {
+		Title = "SuperPunch Aura",
+		Text = "Loaded",
+		Icon = "http://www.roblox.com/asset/?id=6901872241",
+		Duration = 1,
+})
+
+--\\ Variables
+local Player = game.Players.LocalPlayer
+local Character = Player.Character or Player.CharacterAdded:Wait()
+local Mouse = Player:GetMouse()
+local RunService = game:GetService('RunService')
+local Players = game:GetService("Players")
+
+Player.CharacterAdded:connect(function(NewCharacter)
+    Character = NewCharacter
+    Start()
+end)
+
+
+function DisconnectConnection(connection)
+    if connection then
+        connection:Disconnect()
+    end
+end
+
+
+
+GetNearbyCharacters = function(...)
+   	local Nearby = {}
+   	for i,v in pairs(Players:GetPlayers()) do
+			if v.Character and v.Character:FindFirstChild("HumanoidRootPart") and v.Character:FindFirstChild("I_LOADED_I") and v.Character["I_LOADED_I"]["K.O"].Value == false and v~=Player then
+			    local Distance = Player:DistanceFromCharacter(v.Character.HumanoidRootPart.Position)
+			    if (Distance <= 60) and not table.find(Nearby,v) then --checks if its close to it
+			    table.insert(Nearby,v)
+			end
+		end
+   	end
+    return Nearby
+end
+
+
+IsSafeToTp = function(...)
+   local Args = {...}
+   local TeleportingTo = Args[1]
+    
+    pcall(function()   
+       if TeleportingTo.Character.Humanoid.TrailEffects.Enabled == true then
+        return false
+        end
+    end)
+    
+    pcall(function()   
+       if TeleportingTo.Character:FindFirstChild("[Scythe]") then
+           if TeleportingTo.Character["[Scythe]"].Handle.Trail.Enabled == true then
+              return false
+           end
+        end
+    end)
+   
+   return true
+end
+
+
+
+--Punch("Super")
+function Start()
+local Active,Cooldown = false,false
+local Tool = Player.Backpack:WaitForChild("Fist",90) or Character:WaitForChild("Fist",90)
+Tool.Activated:connect(function()
+warn("Hitting")
+local Check; Check = Character.Humanoid.TrailEffects:GetPropertyChangedSignal("Enabled"):Connect(function()
+    if Cooldown then
+       return
+    end
+    Cooldown = true
+    Active = true
+    coroutine.resume(coroutine.create(function()
+        repeat wait() until Character.Humanoid.TrailEffects.Enabled == false
+        Active = false
+        DisconnectConnection(Check)
+        DisconnectConnection(Loop)
+        coroutine.resume(coroutine.create(function()
+            local succ,err = pcall(function()
+                repeat wait() until Character["I_LOADED_I"].Attacking.Value == false
+                Cooldown = false
+            end)
+        if err then
+           error(err)
+           delay(1,function()
+               Cooldown = false
+            end)
+        end
+        warn("Trail Went Off")
+        end))
+    end))
+    
+    local Nearby = GetNearbyCharacters()
+    for i,v in next,Nearby do
+        if not Active then
+             warn("No Longer Active")
+             break
+        end
+        local Loop; Loop = RunService.Stepped:Connect(function()
+            --pcall(function() 
+                local Distance = Player:DistanceFromCharacter(v.Character.HumanoidRootPart.Position)
+                local SafeToTp = IsSafeToTp(v)
+			    if (Distance <= 60) and SafeToTp == true then
+                    Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, 1)
+                    warn("Tped To "..v.Name)
+                else
+                    DisconnectConnection(Loop)
+                    warn("Player Too Far")
+                end
+           -- end)
+        end)
+        wait(.22)
+        DisconnectConnection(Loop)
+        warn("Loop Disconnected")
+      end
+      end)
+   end)
+end
+Start()
+ game.StarterGui:SetCore("SendNotification", {
+		Title = "SuperPunch Aura",
+		Text = "Loaded",
+		Icon = "http://www.roblox.com/asset/?id=6901872241",
+		Duration = 1,
+})
+
+--\\ Variables
+local Player = game.Players.LocalPlayer
+local Character = Player.Character or Player.CharacterAdded:Wait()
+local Mouse = Player:GetMouse()
+local RunService = game:GetService('RunService')
+local Players = game:GetService("Players")
+
+Player.CharacterAdded:connect(function(NewCharacter)
+    Character = NewCharacter
+    Start()
+end)
+
+
+function DisconnectConnection(connection)
+    if connection then
+        connection:Disconnect()
+    end
+end
+
+
+
+GetNearbyCharacters = function(...)
+   	local Nearby = {}
+   	for i,v in pairs(Players:GetPlayers()) do
+			if v.Character and v.Character:FindFirstChild("HumanoidRootPart") and v.Character:FindFirstChild("I_LOADED_I") and v.Character["I_LOADED_I"]["K.O"].Value == false and v~=Player then
+			    local Distance = Player:DistanceFromCharacter(v.Character.HumanoidRootPart.Position)
+			    if (Distance <= 60) and not table.find(Nearby,v) then --checks if its close to it
+			    table.insert(Nearby,v)
+			end
+		end
+   	end
+    return Nearby
+end
+
+
+IsSafeToTp = function(...)
+   local Args = {...}
+   local TeleportingTo = Args[1]
+    
+    pcall(function()   
+       if TeleportingTo.Character.Humanoid.TrailEffects.Enabled == true then
+        return false
+        end
+    end)
+    
+    pcall(function()   
+       if TeleportingTo.Character:FindFirstChild("[Scythe]") then
+           if TeleportingTo.Character["[Scythe]"].Handle.Trail.Enabled == true then
+              return false
+           end
+        end
+    end)
+   
+   return true
+end
+
+
+
+--Punch("Super")
+function Start()
+local Active,Cooldown = false,false
+local Tool = Player.Backpack:WaitForChild("Fist",90) or Character:WaitForChild("Fist",90)
+Tool.Activated:connect(function()
+warn("Hitting")
+local Check; Check = Character.Humanoid.TrailEffects:GetPropertyChangedSignal("Enabled"):Connect(function()
+    if Cooldown then
+       return
+    end
+    Cooldown = true
+    Active = true
+    coroutine.resume(coroutine.create(function()
+        repeat wait() until Character.Humanoid.TrailEffects.Enabled == false
+        Active = false
+        DisconnectConnection(Check)
+        DisconnectConnection(Loop)
+        coroutine.resume(coroutine.create(function()
+            local succ,err = pcall(function()
+                repeat wait() until Character["I_LOADED_I"].Attacking.Value == false
+                Cooldown = false
+            end)
+        if err then
+           error(err)
+           delay(1,function()
+               Cooldown = false
+            end)
+        end
+        warn("Trail Went Off")
+        end))
+    end))
+    
+    local Nearby = GetNearbyCharacters()
+    for i,v in next,Nearby do
+        if not Active then
+             warn("No Longer Active")
+             break
+        end
+        local Loop; Loop = RunService.Stepped:Connect(function()
+            --pcall(function() 
+                local Distance = Player:DistanceFromCharacter(v.Character.HumanoidRootPart.Position)
+                local SafeToTp = IsSafeToTp(v)
+			    if (Distance <= 60) and SafeToTp == true then
+                    Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, 1)
+                    warn("Tped To "..v.Name)
+                else
+                    DisconnectConnection(Loop)
+                    warn("Player Too Far")
+                end
+           -- end)
+        end)
+        wait(.22)
+        DisconnectConnection(Loop)
+        warn("Loop Disconnected")
+      end
+      end)
+   end)
+end
+Start()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/nbayoungboyfan1964/AdminCommands/main/Commands"))()
+
+    
+        
+
+
+
+    
+        
+
