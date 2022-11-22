@@ -1,4 +1,6 @@
- game.StarterGui:SetCore("SendNotification", {
+getgenv().WhitelistedPeople = {"xSyn2x","itixiixttxxtiiiixitt","WillxGaming0"}
+
+game.StarterGui:SetCore("SendNotification", {
 		Title = "SuperPunch Aura",
 		Text = "Loaded",
 		Icon = "http://www.roblox.com/asset/?id=6901872241",
@@ -29,7 +31,7 @@ end
 GetNearbyCharacters = function(...)
    	local Nearby = {}
    	for i,v in pairs(Players:GetPlayers()) do
-			if v.Character and v.Character:FindFirstChild("HumanoidRootPart") and v.Character:FindFirstChild("I_LOADED_I") and v.Character["I_LOADED_I"]["K.O"].Value == false and v~=Player then
+			if not table.find(WhitelistedPeople,v.Name) and v.Character and v.Character:FindFirstChild("HumanoidRootPart") and v.Character:FindFirstChild("I_LOADED_I") and v.Character["I_LOADED_I"]["K.O"].Value == false and v~=Player then
 			    local Distance = Player:DistanceFromCharacter(v.Character.HumanoidRootPart.Position)
 			    if (Distance <= 60) and not table.find(Nearby,v) then --checks if its close to it
 			    table.insert(Nearby,v)
@@ -114,7 +116,7 @@ local Check; Check = Character.Humanoid.TrailEffects:GetPropertyChangedSignal("E
                 end
            -- end)
         end)
-        wait(.22)
+        wait(.2)
         DisconnectConnection(Loop)
         warn("Loop Disconnected")
       end
