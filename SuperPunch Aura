@@ -103,7 +103,7 @@ local Check; Check = Character.Humanoid.TrailEffects:GetPropertyChangedSignal("E
              warn("No Longer Active")
              break
         end
-        local Loop; Loop = RunService.Stepped:Connect(function()
+        local Loop; Loop = RunService.RenderStepped:Connect(function()
             --pcall(function() 
                 local Distance = Player:DistanceFromCharacter(v.Character.HumanoidRootPart.Position)
                 local SafeToTp = IsSafeToTp(v)
