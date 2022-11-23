@@ -108,7 +108,7 @@ local Check; Check = Character.Humanoid.TrailEffects:GetPropertyChangedSignal("E
                 local Distance = Player:DistanceFromCharacter(v.Character.HumanoidRootPart.Position)
                 local SafeToTp = IsSafeToTp(v)
 			    if (Distance <= 60) and SafeToTp == true then
-                    Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, 1)
+                    Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, 1.1)
                     warn("Tped To "..v.Name)
                 else
                     DisconnectConnection(Loop)
