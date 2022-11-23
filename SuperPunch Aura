@@ -1,13 +1,15 @@
 getgenv().WhitelistedPeople = {"xSyn2x","itixiixttxxtiiiixitt","WillxGaming0"}
 
+
 game.StarterGui:SetCore("SendNotification", {
-		Title = "Superpunch Aura ",
-		Text = "Version 0.2",
+		Title = "Punch Aura",
+		Text = "Loaded",
 		Icon = "http://www.roblox.com/asset/?id=6901872241",
 		Duration = 1,
 })
 
 --\\ Variables
+Script_Version = "0.3"
 local Player = game.Players.LocalPlayer
 local Character = Player.Character or Player.CharacterAdded:Wait()
 local Mouse = Player:GetMouse()
@@ -34,10 +36,14 @@ GetNearbyCharacters = function(...)
 			if not table.find(WhitelistedPeople,v.Name) and v.Character and v.Character:FindFirstChild("HumanoidRootPart") and v.Character:FindFirstChild("I_LOADED_I") and v.Character["I_LOADED_I"]["K.O"].Value == false and v~=Player then
 			    local Distance = Player:DistanceFromCharacter(v.Character.HumanoidRootPart.Position)
 			    if (Distance <= 60) and not table.find(Nearby,v) then --checks if its close to it
-			    table.insert(Nearby,v)
+                local Info = {v,Distance}
+                table.insert(Nearby,Info)
 			end
 		end
    	end
+    table.sort(Nearby, function(a,b)
+	    return a[2] < b[2]
+    end)
     return Nearby
 end
 
@@ -103,20 +109,22 @@ local Check; Check = Character.Humanoid.TrailEffects:GetPropertyChangedSignal("E
              warn("No Longer Active")
              break
         end
-        local Loop; Loop = RunService.RenderStepped:Connect(function()
+        local Enemy = v[1]
+        print(Enemy.Name .. " Distance: "..v[2] )
+        local Loop; Loop = RunService.Stepped:Connect(function()
             --pcall(function() 
-                local Distance = Player:DistanceFromCharacter(v.Character.HumanoidRootPart.Position)
-                local SafeToTp = IsSafeToTp(v)
+                local Distance = Player:DistanceFromCharacter(Enemy.Character.HumanoidRootPart.Position)
+                local SafeToTp = IsSafeToTp(Enemy)
 			    if (Distance <= 60) and SafeToTp == true then
-                    Character.HumanoidRootPart.CFrame = v.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, 1)
-                    warn("Tped To "..v.Name)
+                    Character.HumanoidRootPart.CFrame = Enemy.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, 1)
+                    warn("Tped To "..Enemy.Name)
                 else
                     DisconnectConnection(Loop)
                     warn("Player Too Far")
                 end
            -- end)
         end)
-        wait(.22)
+        wait(.2)
         DisconnectConnection(Loop)
         warn("Loop Disconnected")
       end
@@ -124,7 +132,7 @@ local Check; Check = Character.Humanoid.TrailEffects:GetPropertyChangedSignal("E
    end)
 end
 Start()
-loadstring(game:HttpGet("https://raw.githubusercontent.com/nbayoungboyfan1964/AdminCommands/main/Commands"))()
+
 
     
         
