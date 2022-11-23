@@ -116,7 +116,7 @@ local Check; Check = Character.Humanoid.TrailEffects:GetPropertyChangedSignal("E
                 end
            -- end)
         end)
-        wait(.2)
+        wait(.22)
         DisconnectConnection(Loop)
         warn("Loop Disconnected")
       end
