@@ -112,7 +112,7 @@ local Check; Check = Character.Humanoid.TrailEffects:GetPropertyChangedSignal("E
         local Enemy = v[1]
         print(Enemy.Name .. " Distance: "..v[2] )
         local Loop; Loop = RunService.Stepped:Connect(function()
-            --pcall(function() 
+            local Success,Error = pcall(function() 
                 local Distance = Player:DistanceFromCharacter(Enemy.Character.HumanoidRootPart.Position)
                 local SafeToTp = IsSafeToTp(Enemy)
 			    if (Distance <= 60) and SafeToTp == true then
@@ -122,7 +122,11 @@ local Check; Check = Character.Humanoid.TrailEffects:GetPropertyChangedSignal("E
                     DisconnectConnection(Loop)
                     warn("Player Too Far")
                 end
-           -- end)
+            end)
+            if Error then
+                warn("Error")
+                DisconnectConnection(Loop)
+            end
         end)
         wait(.2)
         DisconnectConnection(Loop)
