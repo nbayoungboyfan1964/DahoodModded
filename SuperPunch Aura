@@ -125,6 +125,7 @@ local Check; Check = Character.Humanoid.TrailEffects:GetPropertyChangedSignal("E
             end)
             if Error then
                 warn("Error")
+		continue
                 DisconnectConnection(Loop)
             end
         end)
