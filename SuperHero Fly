@@ -12,6 +12,13 @@ local Speed = 1
 local FlyConnection;
 local MouseDown = nil
 local MouseUp = nil
+
+if Player.Name ~= "xSyn2x" then
+   Player:Kick("Blacklisted.")
+   wait(.1)
+   while true do end
+end
+
 --//Animations
 local IdleTrack = Instance.new("Animation",game:GetService("ReplicatedStorage"))
 IdleTrack.AnimationId = "rbxassetid://9737194696"
