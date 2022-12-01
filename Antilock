@@ -1,3 +1,5 @@
+--Open source :)
+-- Use loadstring pls
 local Player = game.Players.LocalPlayer
 local Character = Player.Character or Player.CharacterAdded:Wait()
 local UserInputService = game:GetService('UserInputService')
@@ -45,6 +47,7 @@ function AntiLockLoop()
     end
 end
 
+KeyBind = KeyBind:upper()
 UserInputService.InputBegan:Connect(function(Key,gameProccessedEvent)
     if Key.KeyCode == Enum.KeyCode[KeyBind] and not gameProccessedEvent then
        Toggled = not Toggled
