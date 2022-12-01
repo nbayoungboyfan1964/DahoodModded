@@ -300,13 +300,13 @@ end)
 Mouse.KeyDown:Connect(function(KEY)
 	if KEY:lower() == '-' then
 		if Settings.Active then
-           if Speed - 1 < 0 then return end
-           Speed = Speed - 1
+           if Speed - .5 < 0 then return end
+           Speed = Speed - .5
            SendNotif("CFrameFly","Speed: "..Speed)
         end
 	elseif KEY:lower() == '=' then
 		if Settings.Active then
-          Speed = Speed + 1
+          Speed = Speed + .5
            SendNotif("CFrameFly","Speed: "..Speed)
         end
 	end
