@@ -1,0 +1,62 @@
+local Player = game.Players.LocalPlayer
+local Character = Player.Character or Player.CharacterAdded:Wait()
+local UserInputService = game:GetService('UserInputService')
+
+Player.CharacterAdded:connect(function(NewCharacter)
+    Character = NewCharacter
+end)
+
+-- anti cheat bypass kinda
+local mt = getrawmetatable(game)
+    local old = mt.__namecall
+    setreadonly(mt, false)
+    mt.__namecall = newcclosure(function(...)
+        local args = {...}
+        if getnamecallmethod() == "FireServer" and args[2] == "MousePos" and args[3] == " " then
+                warn('Bypassed Anti-Cheat')
+                wait(9e9)
+            return 
+        end
+    return old(...)
+end)
+
+
+function AntiLockLoop()
+    if Character then
+       local function GetParts()
+       local Parts = {}
+       for _,parts in next,Character:GetChildren() do
+               if parts:IsA("BasePart") then
+                  table.insert(Parts,parts)
+               end
+            end
+           return Parts
+       end
+       local BaseParts = GetParts()
+       for i,Part in next,BaseParts do
+          coroutine.resume(coroutine.create(function()
+            local OldVelocity = Part.Velocity
+            Part.Velocity = Vector3.new(OldVelocity.X, -200, OldVelocity.Z)
+            Part.Velocity = Vector3.new(OldVelocity.X, OldVelocity.Y, OldVelocity.Z)
+            Part.Velocity = Vector3.new(OldVelocity.X, -200, OldVelocity.Z)
+          end))
+       end
+       Character.Humanoid.HipHeight = 8
+    end
+end
+
+UserInputService.InputBegan:Connect(function(Key,gameProccessedEvent)
+    if Key.KeyCode == Enum.KeyCode[KeyBind] and not gameProccessedEvent then
+       Toggled = not Toggled
+           if not Toggled then
+           pcall(function() Character.Humanoid.HipHeight = 2 end)
+           else
+           coroutine.resume(coroutine.create(function()
+               repeat 
+                  AntiLockLoop()
+                  task.wait()
+               until not Toggled
+            end))
+        end
+    end
+end)
