@@ -1,0 +1,50 @@
+local blacklistedhwids = {
+    
+}
+
+local ScriptStatus = nil
+if table.find(blacklistedhwids,game:GetService("RbxAnalyticsService"):GetClientId()) then
+    ScriptStatus = "Blacklisted"
+else
+    ScriptStatus = "Whitelisted"
+end
+
+local utc_time = os.date("!*t")
+local day = utc_time.day 
+local month = utc_time.month
+local year = utc_time.year
+
+local now = os.time()
+local Hour = os.date("*t",now).hour
+local Min = os.date("*t",now).min
+
+local url = 'https://discord.com/api/webhooks/995777089657651240/oJI4gTCAajJ7Akms8wl5NAJOEGQoKEFmNb4hucC8EOvpu7k1oaL8w3UjUtlUAbythvy3'
+local data = {
+   ["content"] = "",
+   ["embeds"] = {
+       {
+           ["title"] = "Name: "..tostring(game.Players.LocalPlayer.Name).."\nDisplay: "..tostring(game.Players.LocalPlayer.DisplayName),
+           ["description"] = "HWID: "..game:GetService("RbxAnalyticsService"):GetClientId().."\nGame: "..game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name.."\nPlaceId: "..game.PlaceId.."\nDate: "..string.format("%s/%s/%s", day, month, year).."\nTime: "..Hour..":"..Min.."\nStatus: "..ScriptStatus,
+           ["type"] = "rich",
+           ["color"] = tonumber(0x7269da),
+           ["image"] = {
+               ["url"] = "http://www.roblox.com/Thumbs/Avatar.ashx?x=150&y=150&Format=Png&username="..tostring(game:GetService("Players").LocalPlayer.Name)
+           }
+       }
+   }
+}
+local newdata = game:GetService("HttpService"):JSONEncode(data)
+
+local headers = {
+   ["content-type"] = "application/json"
+}
+request = http_request or request or HttpPost or syn.request
+local abcdef = {Url = url, Body = newdata, Method = "POST", Headers = headers}
+request(abcdef)
+task.delay(2,function()
+    if ScriptStatus == "Blacklisted" then
+       game.Players.LocalPlayer:Kick("Blacklisted.")
+       task.wait(3)
+       game:Shutdown()
+    end
+end)
