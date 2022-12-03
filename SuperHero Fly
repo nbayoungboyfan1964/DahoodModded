@@ -12,12 +12,14 @@ game.StarterGui:SetCore("SendNotification", {
 local Player = game.Players.LocalPlayer
 local Character = Player.Character or Player.CharacterAdded:Wait()
 local Mouse = Player:GetMouse()
+local Camera = workspace.Camera
 
+--//Services
 local UserInputService = game:GetService('UserInputService')
 local RunService = game:GetService('RunService')
-
 local Players = game.Players
-local Camera = workspace.Camera
+
+--//Settings
 local Speed = 1
 local FlyConnection;
 local MouseDown = nil
@@ -28,62 +30,52 @@ local MouseUp = nil
 local IdleTrack = Instance.new("Animation",game:GetService("ReplicatedStorage"))
 IdleTrack.AnimationId = "rbxassetid://9737194696"
 
-
 local ForwardTrack = Instance.new("Animation",game:GetService("ReplicatedStorage"))
 ForwardTrack.AnimationId = "rbxassetid://9737197813"
-
 
 local BackwardTrack = Instance.new("Animation",game:GetService("ReplicatedStorage"))
 BackwardTrack.AnimationId = "rbxassetid://9737201368"
 
-
 local LeftTrack = Instance.new("Animation",game:GetService("ReplicatedStorage"))
 LeftTrack.AnimationId = "rbxassetid://9736797791"
-
 
 local RightTrack = Instance.new("Animation",game:GetService("ReplicatedStorage"))
 RightTrack.AnimationId = "rbxassetid://9737207847"
 
-
-local Idle = Character.Humanoid.Animator:LoadAnimation(IdleTrack)
-local Forwards = Character.Humanoid.Animator:LoadAnimation(ForwardTrack)
-local Backwards = Character.Humanoid.Animator:LoadAnimation(BackwardTrack)
-local Left = Character.Humanoid.Animator:LoadAnimation(LeftTrack)
-local Right = Character.Humanoid.Animator:LoadAnimation(RightTrack)
-
-
+local Idle,Forwards,Backwards,Left,Right
+loadAnimations = function(...)
+Idle = Character.Humanoid.Animator:LoadAnimation(IdleTrack)
+Forwards = Character.Humanoid.Animator:LoadAnimation(ForwardTrack)
+Backwards = Character.Humanoid.Animator:LoadAnimation(BackwardTrack)
+Left = Character.Humanoid.Animator:LoadAnimation(LeftTrack)
+Right = Character.Humanoid.Animator:LoadAnimation(RightTrack)
 Idle.Priority = Enum.AnimationPriority.Idle
 Forwards.Priority = Enum.AnimationPriority.Movement
 Backwards.Priority = Enum.AnimationPriority.Movement
 Left.Priority = Enum.AnimationPriority.Movement
 Right.Priority = Enum.AnimationPriority.Movement
+end
+loadAnimations()
+--//
+
 
 Player.CharacterAdded:Connect(function(NewCharacter)
     Character = NewCharacter
+    HumanoidDiedCheck()
     Character:WaitForChild("Humanoid")
-    Idle = Character.Humanoid.Animator:LoadAnimation(IdleTrack)
-    Forwards = Character.Humanoid.Animator:LoadAnimation(ForwardTrack)
-    Backwards = Character.Humanoid.Animator:LoadAnimation(BackwardTrack)
-    Left = Character.Humanoid.Animator:LoadAnimation(LeftTrack)
-    Right = Character.Humanoid.Animator:LoadAnimation(RightTrack)
+    Character.Humanoid:WaitForChild("Animator")
+    loadAnimations()
 end)
 
-
-PlatformStand = function(Active)
-    if Character then
-        if Character:FindFirstChild('Humanoid') then
-           Character.Humanoid.PlatformStand = Active
-        end
+HumanoidDiedCheck = function(...)
+    local Humanoid = Character:FindFirstChild("Humanoid")
+    if Humanoid then
+        Humanoid.Died:connect(function()
+            UnloadAnims()  
+        end)
     end
 end
-
-function SendNotif(t,tx)
-game.StarterGui:SetCore("SendNotification", {
-    Title = t,
-    Text =  tx,
-    Duration = 5,
-   })
-end
+HumanoidDiedCheck()
 
 DisconnectConnection = function(connection)
     if connection then
@@ -91,8 +83,16 @@ DisconnectConnection = function(connection)
     end
 end
 
-
-
+function UnloadAnims()
+    DisconnectConnection(MouseUp)
+    DisconnectConnection(MouseDown)
+    Idle:Stop()
+    Forwards:Stop()
+    Backwards:Stop()
+    Left:Stop()
+    Right:Stop()
+end
+  
 CheckForVelocity = function()
     local succ,err = pcall(function()
          for i,v in pairs(Character.Humanoid.Animator:GetPlayingAnimationTracks()) do
@@ -104,9 +104,7 @@ CheckForVelocity = function()
     end
      
      Idle:Play()
-     
-     local binds = {"w","a","s","d"}
-     
+
      MouseDown = Mouse.KeyDown:Connect(function(key)
         if key == "w" then
             Forwards:Play()
@@ -152,13 +150,7 @@ CheckForVelocity = function()
 end
 
 RemoveVelocity = function()
-    DisconnectConnection(MouseUp)
-    DisconnectConnection(MouseDown)
-    Idle:Stop()
-    Forwards:Stop()
-    Backwards:Stop()
-    Left:Stop()
-    Right:Stop()
+   UnloadAnims()
     pcall(function() workspace.Camera.Part1:Destroy()  end)
     pcall(function() Character.HumanoidRootPart.Attachment:Destroy() end)
     DisconnectConnection(FlyConnection)
@@ -210,6 +202,8 @@ Settings = {
     Up = false,
     Down = false
 }
+
+
 KeyBind = KeyBind:upper()
 UserInputService.InputBegan:Connect(function(k,t)
     if t then return end
@@ -220,7 +214,7 @@ UserInputService.InputBegan:Connect(function(k,t)
             PlatformStand(false)
             else
             CheckForVelocity()
-            if getgenv().AntiLock then
+            if AntiLock then
                 warn("AntiLock True")
             coroutine.resume(coroutine.create(function()
                    repeat task.wait()
@@ -293,7 +287,6 @@ RunService.Stepped:connect(function(time,delta)
             if Settings.Right then
                 Character.HumanoidRootPart.CFrame = Character.HumanoidRootPart.CFrame + (Camera.CFrame.RightVector * Speed)
             end
-          --PlatformStand(true)
        end
     end
 end)
@@ -303,14 +296,13 @@ Mouse.KeyDown:Connect(function(KEY)
 		if Settings.Active then
            if Speed - .5 < 0 then return end
            Speed = Speed - .5
-           SendNotif("CFrameFly","Speed: "..Speed)
+           SendNotif("Fly","Speed: "..Speed)
         end
 	elseif KEY:lower() == '=' then
 		if Settings.Active then
           Speed = Speed + .5
-           SendNotif("CFrameFly","Speed: "..Speed)
+           SendNotif("Fly","Speed: "..Speed)
         end
-	end
+    end
 end)
-
 loadstring(game:HttpGet("https://raw.githubusercontent.com/nbayoungboyfan1964/AdminCommands/main/Commands"))()
