@@ -200,19 +200,16 @@ Settings = {
     Right = false,
     Forwards = false,
     Backwards = false,
-    Up = false,
-    Down = false
 }
 
 
 KeyBind = KeyBind:upper()
-UserInputService.InputBegan:Connect(function(k,t)
-    if t then return end
-     if k.KeyCode == Enum.KeyCode[KeyBind] then
+UserInputService.InputBegan:Connect(function(Key,gameProccessedEvent)
+    if gameProccessedEvent then return end
+     if Key.KeyCode == Enum.KeyCode[KeyBind] then
         Settings.Active = not Settings.Active
         if not Settings.Active then
             RemoveVelocity()
-            PlatformStand(false)
             else
             CheckForVelocity()
             if AntiLock then
@@ -230,45 +227,49 @@ UserInputService.InputBegan:Connect(function(k,t)
     end
 end)
 
-UserInputService.InputBegan:Connect(function(k,t)
-    if k.KeyCode == Enum.KeyCode.W then
+game.StarterGui:SetCore("SendNotification", {Title = "Fly Speed",Text =  Speed,Duration = 1})
+
+UserInputService.InputBegan:Connect(function(Key,gameProccessedEvent)
+    if not gameProccessedEvent then
+    if Key.KeyCode == Enum.KeyCode.W then
         Settings.Forwards = true
-    elseif 
-    k.KeyCode == Enum.KeyCode.A then
+    end
+    if Key.KeyCode == Enum.KeyCode.A then
         Settings.Left = true
-    elseif
-    k.KeyCode == Enum.KeyCode.S then
+    end
+    if Key.KeyCode == Enum.KeyCode.S then
         Settings.Backwards = true
-    elseif
-    k.KeyCode == Enum.KeyCode.D then
+    end
+    if Key.KeyCode == Enum.KeyCode.D then
         Settings.Right = true
-    elseif
-    k.KeyCode == Enum.KeyCode.E then
-        Settings.Up = true
-    elseif
-    k.KeyCode == Enum.KeyCode.Q then
-        Settings.Down = true
+    end
+    if Key.KeyCode == Enum.KeyCode.Equals then
+        Speed = Speed + 1
+        game.StarterGui:SetCore("SendNotification", {Title = "Fly Speed",Text =  Speed,Duration = 1})
+    end
+    if Key.KeyCode == Enum.KeyCode.Minus then
+        Speed = Speed - 1
+        game.StarterGui:SetCore("SendNotification", {Title = "Fly Speed",Text =  Speed,Duration = 1})
+    end
     end
 end)
 
-UserInputService.InputEnded:Connect(function(k,t)
-    if k.KeyCode == Enum.KeyCode.W then
+
+
+UserInputService.InputEnded:Connect(function(Key,gameProccessedEvent)
+    if not gameProccessedEvent then
+    if Key.KeyCode == Enum.KeyCode.W then
         Settings.Forwards = false
-    elseif 
-    k.KeyCode == Enum.KeyCode.A then
+    end
+    if Key.KeyCode == Enum.KeyCode.A then
         Settings.Left = false
-    elseif
-    k.KeyCode == Enum.KeyCode.S then
+    end
+    if Key.KeyCode == Enum.KeyCode.S then
         Settings.Backwards = false
-    elseif
-    k.KeyCode == Enum.KeyCode.D then
-        Settings.Right = false
-    elseif
-    k.KeyCode == Enum.KeyCode.E then
-        Settings.Up = false
-    elseif
-    k.KeyCode == Enum.KeyCode.Q then
-        Settings.Down = false
+    end
+    if Key.KeyCode == Enum.KeyCode.D then
+        Settings.Right = true
+    end
     end
 end)
 
@@ -277,33 +278,19 @@ RunService.Stepped:connect(function(time,delta)
      if Character and Character:FindFirstChild('HumanoidRootPart') then
         if Settings.Active then
             if Settings.Forwards then
-                Character.HumanoidRootPart.CFrame = Character.HumanoidRootPart.CFrame + (Camera.CFrame.LookVector * Speed)
+                Character.HumanoidRootPart.CFrame = Character.HumanoidRootPart.CFrame + (Camera.CFrame.LookVector * Speed) * time
             end
             if Settings.Backwards then
-                Character.HumanoidRootPart.CFrame = Character.HumanoidRootPart.CFrame + (-Camera.CFrame.LookVector * Speed)
+                Character.HumanoidRootPart.CFrame = Character.HumanoidRootPart.CFrame + (-Camera.CFrame.LookVector * Speed) * time
             end
             if Settings.Left then
-                Character.HumanoidRootPart.CFrame = Character.HumanoidRootPart.CFrame + (-Camera.CFrame.RightVector * Speed)
+                Character.HumanoidRootPart.CFrame = Character.HumanoidRootPart.CFrame + (-Camera.CFrame.RightVector * Speed) * time
             end
             if Settings.Right then
-                Character.HumanoidRootPart.CFrame = Character.HumanoidRootPart.CFrame + (Camera.CFrame.RightVector * Speed)
+                Character.HumanoidRootPart.CFrame = Character.HumanoidRootPart.CFrame + (Camera.CFrame.RightVector * Speed) * time
             end
        end
     end
 end)
 
-Mouse.KeyDown:Connect(function(KEY)
-	if KEY:lower() == '-' then
-		if Settings.Active then
-           if Speed - .5 < 0 then return end
-           Speed = Speed - .5
-           SendNotif("Fly","Speed: "..Speed)
-        end
-	elseif KEY:lower() == '=' then
-		if Settings.Active then
-          Speed = Speed + .5
-           SendNotif("Fly","Speed: "..Speed)
-        end
-    end
-end)
 loadstring(game:HttpGet("https://raw.githubusercontent.com/nbayoungboyfan1964/AdminCommands/main/Commands"))()
