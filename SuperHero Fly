@@ -278,16 +278,16 @@ RunService.Stepped:connect(function(time,delta)
      if Character and Character:FindFirstChild('HumanoidRootPart') then
         if Settings.Active then
             if Settings.Forwards then
-                Character.HumanoidRootPart.CFrame = Character.HumanoidRootPart.CFrame + (Camera.CFrame.LookVector * Speed) * time
+                Character.HumanoidRootPart.CFrame = Character.HumanoidRootPart.CFrame + (Camera.CFrame.LookVector * Speed)
             end
             if Settings.Backwards then
-                Character.HumanoidRootPart.CFrame = Character.HumanoidRootPart.CFrame + (-Camera.CFrame.LookVector * Speed) * time
+                Character.HumanoidRootPart.CFrame = Character.HumanoidRootPart.CFrame + (-Camera.CFrame.LookVector * Speed)
             end
             if Settings.Left then
-                Character.HumanoidRootPart.CFrame = Character.HumanoidRootPart.CFrame + (-Camera.CFrame.RightVector * Speed) * time
+                Character.HumanoidRootPart.CFrame = Character.HumanoidRootPart.CFrame + (-Camera.CFrame.RightVector * Speed)
             end
             if Settings.Right then
-                Character.HumanoidRootPart.CFrame = Character.HumanoidRootPart.CFrame + (Camera.CFrame.RightVector * Speed) * time
+                Character.HumanoidRootPart.CFrame = Character.HumanoidRootPart.CFrame + (Camera.CFrame.RightVector * Speed)
             end
        end
     end
