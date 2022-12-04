@@ -268,7 +268,7 @@ UserInputService.InputEnded:Connect(function(Key,gameProccessedEvent)
         Settings.Backwards = false
     end
     if Key.KeyCode == Enum.KeyCode.D then
-        Settings.Right = true
+        Settings.Right = false
     end
     end
 end)
