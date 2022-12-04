@@ -27,19 +27,19 @@ local MouseUp = nil
 
 
 --//Animations
-local IdleTrack = Instance.new("Animation",game:GetService("ReplicatedStorage"))
+local IdleTrack = Instance.new("Animation")
 IdleTrack.AnimationId = "rbxassetid://9737194696"
 
-local ForwardTrack = Instance.new("Animation",game:GetService("ReplicatedStorage"))
+local ForwardTrack = Instance.new("Animation")
 ForwardTrack.AnimationId = "rbxassetid://9737197813"
 
-local BackwardTrack = Instance.new("Animation",game:GetService("ReplicatedStorage"))
+local BackwardTrack = Instance.new("Animation")
 BackwardTrack.AnimationId = "rbxassetid://9737201368"
 
-local LeftTrack = Instance.new("Animation",game:GetService("ReplicatedStorage"))
+local LeftTrack = Instance.new("Animation")
 LeftTrack.AnimationId = "rbxassetid://9736797791"
 
-local RightTrack = Instance.new("Animation",game:GetService("ReplicatedStorage"))
+local RightTrack = Instance.new("Animation")
 RightTrack.AnimationId = "rbxassetid://9737207847"
 
 local Idle,Forwards,Backwards,Left,Right
