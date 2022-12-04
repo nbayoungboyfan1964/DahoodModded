@@ -71,7 +71,8 @@ HumanoidDiedCheck = function(...)
     local Humanoid = Character:FindFirstChild("Humanoid")
     if Humanoid then
         Humanoid.Died:connect(function()
-            UnloadAnims()  
+            UnloadAnims()
+	    Settings.Active = false
         end)
     end
 end
