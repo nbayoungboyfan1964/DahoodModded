@@ -1,0 +1,144 @@
+if not game:IsLoaded() then
+    game.Loaded:Wait()
+end
+
+repeat task.wait()
+until game.Players.LocalPlayer:FindFirstChild("READY_TO_PLAY")
+
+local FlingFriends = true
+
+--//Variables
+local LocalPlayer = game.Players.LocalPlayer
+local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+LocalPlayer.CharacterAdded:Connect(function(NewCharacter)
+    Character = NewCharacter
+end)
+
+
+local Mouse = LocalPlayer:GetMouse()
+local Camera = workspace.CurrentCamera
+
+--//Services
+local RunService = game:GetService('RunService')
+local Players = game:GetService("Players")
+
+
+
+local FlingPlayer = function(...)
+local Args = {...}
+local Target = Args[1]
+local DelayTime = Args[2] or 3.5
+local Disconnect = function(connection)
+    if connection then
+        connection:Disconnect()
+    end
+end
+
+if Target and Target.Character then
+
+if Character:FindFirstChild("I_LOADED_I"):FindFirstChild("K.O") then
+pcall(function() Character.UpperTorso:Destroy() end)
+local RemoveKo,ReadyToStart; RemoveKo = LocalPlayer.CharacterAdded:Connect(function(NewCharacter)
+   NewCharacter:WaitForChild("I_LOADED_I"):WaitForChild("K.O"):Destroy()
+   ReadyToStart = true
+   RemoveKo:Disconnect()
+end)
+repeat task.wait() until ReadyToStart == true
+end
+
+
+local LoopTeleport,LoopVelocity,OldVelocity,OldPosition,StopFling;
+Camera.CameraSubject = Target.Character
+
+
+if not Character:WaitForChild("HumanoidRootPart"):FindFirstChild("LinearVelocity") then
+   local Attachment = Instance.new("Attachment",Character.HumanoidRootPart)
+   local VelocityT = Instance.new('LinearVelocity');VelocityT.MaxForce = math.huge;VelocityT.Parent = Character.HumanoidRootPart
+   VelocityT.VectorVelocity = Vector3.new(0,0,0);VelocityT.Attachment0 = Attachment  
+end
+
+OldVelocity = Character.HumanoidRootPart.AssemblyLinearVelocity
+OldPosition = Character.HumanoidRootPart.Position
+
+
+LoopTeleport = RunService.Stepped:Connect(function(step,delta)
+    step = step - workspace.DistributedGameTime
+    if Character:FindFirstChildOfClass('Humanoid') and Character:FindFirstChildOfClass('Humanoid').SeatPart then
+		Character:FindFirstChildOfClass('Humanoid').Sit = false
+	end
+    if Character ~= nil then
+		for _, child in pairs(Character:GetDescendants()) do
+				if child:IsA("BasePart") and child.CanCollide == true then
+				child.CanCollide = false
+			end
+		end
+	end
+    if Character and Character:FindFirstChild("HumanoidRootPart") and Target and Target.Character and Target.Character:FindFirstChild("UpperTorso") and Target.Character:FindFirstChild("HumanoidRootPart") and Target.Character:FindFirstChild("Humanoid") and Target.Character.Humanoid.Sit == false and Target:FindFirstChild("READY_TO_PLAY") then
+       Character.HumanoidRootPart.CFrame = (Target.Character.UpperTorso.CFrame) + (Target.Character.HumanoidRootPart.Velocity * (step * 50))
+    else
+       StopFling = true
+    end
+end)
+
+
+LoopVelocity = RunService.Heartbeat:Connect(function(deltaTime)
+    if Character and Character:FindFirstChild("HumanoidRootPart") then
+       local OldV = Character.HumanoidRootPart.AssemblyLinearVelocity
+       Character.HumanoidRootPart.AssemblyLinearVelocity = Vector3.new(1,1,1) * (2^100)
+       RunService.RenderStepped:wait()
+       Character.HumanoidRootPart.AssemblyLinearVelocity = OldV
+    else
+       StopFling = true
+    end
+end)
+
+
+local starttime = tick();
+repeat task.wait()
+until StopFling == true or (Target.Character.HumanoidRootPart.Position - Character.HumanoidRootPart.Position).magnitude >= 60 or tick() - starttime >= DelayTime or Target == nil or Character == nil
+
+
+Camera.CameraSubject = Character
+
+Disconnect(LoopTeleport)
+Disconnect(LoopVelocity)
+
+
+if Args[3] and Args[3] == "true" then
+   Character.HumanoidRootPart.CFrame = CFrame.new(OldPosition)
+end
+pcall(function() Character.HumanoidRootPart:FindFirstChild("LinearVelocity"):Destroy() end)
+
+    end
+end
+
+
+repeat task.wait()
+    local FlingablePlayers = Players:GetPlayers()
+    local Myself = table.find(FlingablePlayers,LocalPlayer)
+    table.remove(FlingablePlayers,Myself)
+    if FlingFriends == false then
+    for _,v in pairs(FlingablePlayers) do
+           if v:IsFriendsWith(LocalPlayer.UserId) then
+               local Friend =  table.find(FlingablePlayers,v)
+               table.remove(FlingablePlayers,Friend)
+          end
+       end
+    end
+    if #FlingablePlayers > 0 then
+       local randomPlayer = FlingablePlayers[math.random(1,#FlingablePlayers)]
+       FlingPlayer(randomPlayer,3.5,true)
+    end
+until #Players:GetPlayers() <= 5 
+
+local CurrentPlaceId = game.PlaceId
+local Servers = game.HttpService:JSONDecode(game:HttpGet("https://games.roblox.com/v1/games/"..CurrentPlaceId.."/servers/Public?sortOrder=Asc&limit=100"))
+for i,v in pairs(Servers.data) do
+  if v.playing ~= v.maxPlayers and v.playing >= 20 then
+      game:GetService('TeleportService'):TeleportToPlaceInstance(game.PlaceId, v.id)
+  end
+end
+
+
+
+
